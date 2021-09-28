@@ -433,6 +433,8 @@ class BandSample(GeoObject):
         self._raster = band_shape_guard(raster)
         self._nodata = nodata
         self._transform = Affine(*transform) if not isinstance(transform, Affine) else transform
+        if crs is None:
+            crs = "EPSG:4326"
         self._crs = CRS(init=crs) if not isinstance(crs, CRS) else crs
 
     def __eq__(self, other):

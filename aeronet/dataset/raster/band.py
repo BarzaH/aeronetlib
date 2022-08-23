@@ -2,6 +2,8 @@ import os
 import numpy as np
 import warnings
 
+import cv2
+
 import rasterio
 from rasterio import Affine
 from rasterio.crs import CRS
@@ -215,10 +217,12 @@ class Band(GeoObject):
         dst_nodata = self.nodata if self.nodata is not None else 0
         dst_transform = Affine(self.transform.a, self.transform.b, coord_x,
                                self.transform.d, self.transform.e, coord_y)
-
-        dst_raster = self._band.read(window=((y, y + height), (x, x + width)),
-                                     boundless=True, fill_value=dst_nodata)
-
+        if self._band.name.endswith('png'):
+            image = cv2.imread(self._band.name, cv2.IMREAD_UNCHANGED)
+            dst_raster = image[y:y+height, x:x+width]
+        else:
+            dst_raster = self._band.read(window=((y, y + height), (x, x + width)),
+                                        boundless=True, fill_value=dst_nodata)
         sample = BandSample(dst_name, dst_raster, dst_crs, dst_transform, dst_nodata)
 
         return sample

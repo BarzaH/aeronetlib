@@ -1,0 +1,12 @@
+FROM harbor.stageogip.ru/forestry/base:ci-container06.06.2024
+WORKDIR /app
+
+ARG NEXUS_USER
+ARG NEXUS_PASSWORD
+
+RUN python3.11 -m pip install build twine
+
+COPY . .
+
+RUN python3.11 -m build
+RUN twine upload --repository-url https://nexus.devogip.ru/repository/aist-pypi/ -u ${NEXUS_USER} -p ${NEXUS_PASSWORD} dist/*
